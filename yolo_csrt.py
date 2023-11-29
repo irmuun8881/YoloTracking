@@ -6,13 +6,17 @@ from collections import deque
 model = torch.hub.load('ultralytics/yolov5', 'yolov5l', pretrained=True)
 
 # Initialize video
-cap = cv2.VideoCapture('/Users/JessFort/Documents/My_Coding_folder/dip_project/highway360.mp4')
+cap = cv2.VideoCapture('/Users/JessFort/Documents/My_Coding_folder/DIP/same_instance.mp4')
+
+# Define the target frame size
+target_width = 320
+target_height = 240
 
 # Initialize tracker for each car detected
 trackers = []
 tracker_labels = []  # Store labels for each tracker
 frame_idx = 0
-detection_interval =15  # Interval for re-running detection and refreshing trackers
+detection_interval = 30  # Interval for re-running detection and refreshing trackers
 tracker_history = deque(maxlen=10)  # Store last locations to assist re-detection
 
 # Define the should_redetect function
@@ -23,6 +27,9 @@ while cap.isOpened():
     ret, frame = cap.read()
     if not ret:
         break
+
+    # Resize the frame to the target dimensions
+    frame = cv2.resize(frame, (target_width, target_height))
 
     # Update trackers if they are already initialized
     for i, tracker in enumerate(trackers):
